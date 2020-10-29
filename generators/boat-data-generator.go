@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "context"
+	"context"
 	"fmt"
 	"time"
 	"math/rand"
@@ -29,6 +29,21 @@ func main() {
 
 // SendBoatData ...
 func SendBoatData(numMessages int, dt float32) {
+	speedboatConf := kafka.WriterConfig{
+		Brokers:  []string{"localhost:9092"},
+		Topic:    "raw_speedboat_data",
+		Balancer: &kafka.Hash{},
+	}
+	speedboatWriter := kafka.NewWriter(speedboatConf)
+
+	sailboatConf := kafka.WriterConfig{
+		Brokers:  []string{"localhost:9092"},
+		Topic:    "raw_sailboat_data",
+		Balancer: &kafka.Hash{},
+	}
+	sailboatWriter := kafka.NewWriter(sailboatConf)
+
+
 	speedboatNames := []string{"SS Hare", "The Flying Wasp", "Slice of Life", "Dont Crash Me"}
 	sailboatNames := []string{"SS Slow", "SS Windbag", "Slow n Steady", "Tow Me"}
 
@@ -58,6 +73,9 @@ func SendBoatData(numMessages int, dt float32) {
 			}
 			fmt.Println(string(sailboatMsgValue))
 		}
+
+		speedboatWriter.WriteMessages(context.Background(), speedboatMsgs...)
+		sailboatWriter.WriteMessages(context.Background(), sailboatMsgs...)
 
 		t = t+dt
 	}
