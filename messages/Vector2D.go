@@ -39,3 +39,8 @@ func AverageRateOfChange(v0 Vector2D, v1 Vector2D, t0 float64, t1 float64) Vecto
 
 	return velocity
 }
+
+// CalculateOrientation - calculates angle/orientation
+func CalculateOrientation(v0 Vector2D) float64 {
+	return math.Atan2(v0.Y, v0.X)
+}

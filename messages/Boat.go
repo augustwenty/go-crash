@@ -6,5 +6,6 @@ type Boat struct {
 	Type      string     `json:"Type"`
 	Position  Vector2D   `json:"Position"`
 	Velocity  Vector2D   `json:"Velocity"`
-	Timestamp float32    `json:"Timestamp"`
+	Orientation float64  `json:"Orientation"`
+	Timestamp float64    `json:"Timestamp"`
 }
