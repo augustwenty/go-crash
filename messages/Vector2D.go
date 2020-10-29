@@ -1,27 +1,37 @@
 package messages
 
-import (
-	"math"
-)
-
 // Vector2D ...
 type Vector2D struct {
-	Vx float64 `json:"dx"`
-	Vy float64 `json:"dy"`
-	Magnitude float64 `json:"magnitude"`
-	Theta float64 `json:"theta"`
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
 }
 
-// CreateVector - creates a vector given starting and ending points and time
-func CreateVector(p0 Point2D, p1 Point2D) Vector2D {
+// VectorDifference - determines difference between two vectors
+func VectorDifference(v0 Vector2D, v1 Vector2D) Vector2D {
 
-	dx := p1.X - p0.X
-	dy := p1.Y - p0.Y
+	dx := v1.X - v0.X
+	dy := v1.Y - v0.Y
 
 	return Vector2D {
-		Vx: dx,
-		Vy: dy,
-		Magnitude: math.Sqrt((dx * dx) + (dy * dy)),
-		Theta: math.Atan2(dy, dx),
+		X: dx,
+		Y: dy,
 	}
+}
+
+// AverageRateOfChange - calculates velocity between two vectors
+func AverageRateOfChange(v0 Vector2D, v1 Vector2D, t0 float64, t1 float64) Vector2D {
+	
+	velocity := Vector2D {
+		X: 0,
+		Y: 0,
+	}
+
+	dt := t1 - t0
+	if dt != 0 {
+		velocity := VectorDifference(v0, v1)
+		velocity.X /= dt
+		velocity.Y /= dt
+	}
+
+	return velocity
 }

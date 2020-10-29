@@ -81,7 +81,7 @@ func transform(rxQueue chan messages.Sailboat, xmtQueue chan messages.Boat) {
 				Name: sailboat.Name,
 				Type: "sailboat",
 				Position: sailboat.Position,
-				Velocity: messages.Velocity2D{},					// TBD - transform this
+				Velocity: messages.Vector2D{},					// TBD - transform this
 				Timestamp: sailboat.Timestamp,
 			}
 
