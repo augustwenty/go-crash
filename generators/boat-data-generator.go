@@ -114,38 +114,3 @@ func NewSailboatMessage(name string, t float32, r0 messages.Vector2D, v0 message
 func GetBoatPosition(t float32, r0 messages.Vector2D, v0 messages.Vector2D) messages.Vector2D {
 	return messages.Vector2D{X: r0.X + v0.X*t, Y: r0.Y + v0.Y*t}
 }
-
-// func SendDummyData() {
-// 	wConf := kafka.WriterConfig{
-// 		Brokers:  []string{"localhost:9092"},
-// 		Topic:    "first_topic",
-// 		Balancer: &kafka.Hash{},
-// 	}
-// 	writer := kafka.NewWriter(wConf)
-// 	boats := []string{"a", "b", "c", "d"}
-// 	boatIndex := 0
-// 	x := 0
-// 	y := 0
-// 	for i := 0; i < 100; i++ {
-// 		boatName := boats[boatIndex]
-// 		coordinates := fmt.Sprintf("{\"x\": %v, \"y\": %v }", x, y)
-// 		err := writer.WriteMessages(context.Background(),
-// 			kafka.Message{
-// 				Key:   []byte(boatName),
-// 				Value: []byte(coordinates),
-// 			},
-// 		)
-// 		if err != nil {
-// 			fmt.Println("Yo major failure!")
-// 		}
-// 		fmt.Println(fmt.Sprintf("Name: %v, JSON: '%v'", boatName, coordinates))
-// 		x++
-// 		y++
-// 		boatIndex++
-// 		boatIndex %= len(boats)
-// 	}
-// 	fmt.Println("Closing writer")
-// 	if err := writer.Close(); err != nil {
-// 		fmt.Println("Couldn't closer the writer")
-// 	}
-// }
