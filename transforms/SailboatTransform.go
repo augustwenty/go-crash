@@ -29,7 +29,7 @@ func main() {
 func readSailboats(cancellationContext context.Context, rxQueue chan messages.Sailboat) {
 	readerConf := kafka.ReaderConfig{
 		Brokers:  []string{"localhost:9092"},
-		Topic:    "raw_boat_data",
+		Topic:    "raw_sailboat_data",
 		GroupID:  "g3",
 		MaxBytes: 1024,
 	}
@@ -65,24 +65,31 @@ func readSailboats(cancellationContext context.Context, rxQueue chan messages.Sa
 
 func transform(rxQueue chan messages.Sailboat, xmtQueue chan messages.Boat) {
 
-	// Receive
-	for sailboat := range rxQueue {
-		// Transform - TODO
+	sailboatHistory := make(map[string]messages.Sailboat)
 
-		// Lookup last velocity in map for this boat
-		// We can only calculate velocity with two points
-		// If not found, nothing to send
-		// If found, calculate and send		
-		boat := messages.Boat{
-			Name: sailboat.Name,
-			Type: "sailboat",
-			Position: sailboat.Position,
-			Velocity: messages.Vector2D{ X: 0, Y: 0},					// TBD - transform this
-			Timestamp: sailboat.Timestamp,
+	for latest := range rxQueue {
+
+		lastKnown, found := sailboatHistory[latest.Name]
+		if found {
+			t0 := lastKnown.Timestamp
+			t1 := latest.Timestamp
+			p0 := lastKnown.Position
+			p1 := latest.Position
+			velocity := messages.AverageRateOfChange(p0, p1, t0, t1)
+
+			boat := messages.Boat{
+				Name: latest.Name,
+				Type: "sailboat",
+				Position: latest.Position,
+				Velocity: velocity,
+				Orientation: messages.CalculateOrientation(velocity),
+				Timestamp: latest.Timestamp,
+			}
+
+			xmtQueue <- boat
+		} else {
+			sailboatHistory[latest.Name] = latest
 		}
-
-		// Send
-		xmtQueue <- boat
 	}
 
 	fmt.Println("Stopping transformations.  Closing transmit queue...")
