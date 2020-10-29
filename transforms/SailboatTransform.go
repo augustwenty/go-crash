@@ -65,6 +65,8 @@ func readSailboats(cancellationContext context.Context, rxQueue chan messages.Sa
 
 func transform(rxQueue chan messages.Sailboat, xmtQueue chan messages.Boat) {
 
+	sailboatHistory := make(map[string]messages.Sailboat)
+
 	// Receive
 	for sailboat := range rxQueue {
 		// Transform - TODO
@@ -72,17 +74,21 @@ func transform(rxQueue chan messages.Sailboat, xmtQueue chan messages.Boat) {
 		// Lookup last velocity in map for this boat
 		// We can only calculate velocity with two points
 		// If not found, nothing to send
-		// If found, calculate and send		
-		boat := messages.Boat{
-			Name: sailboat.Name,
-			Type: "sailboat",
-			Position: sailboat.Position,
-			Velocity: messages.Vector2D{ X: 0, Y: 0},					// TBD - transform this
-			Timestamp: sailboat.Timestamp,
-		}
+		// If found, calculate and send
+		_, found := sailboatHistory[sailboat.Name]			// TBD use last known position to calc below
+		if found {
+			boat := messages.Boat{
+				Name: sailboat.Name,
+				Type: "sailboat",
+				Position: sailboat.Position,
+				Velocity: messages.Velocity2D{},					// TBD - transform this
+				Timestamp: sailboat.Timestamp,
+			}
 
-		// Send
-		xmtQueue <- boat
+			xmtQueue <- boat
+		} else {
+			sailboatHistory[sailboat.Name] = sailboat
+		}
 	}
 
 	fmt.Println("Stopping transformations.  Closing transmit queue...")
