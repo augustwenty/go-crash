@@ -46,7 +46,7 @@ func readSailboats(cancellationContext context.Context, rxQueue chan messages.Sa
 		} else if err != nil {
 			fmt.Printf("ERROR: an error occurred reading messages -> %v\n", err)
 		} else {
-			fmt.Printf("Processing message %v\n", msg.Key)
+			fmt.Printf("Receiving message %v\n", string(msg.Key))
 
 			var sailBoat messages.Sailboat
 			err := json.Unmarshal(msg.Value, &sailBoat)
@@ -68,7 +68,6 @@ func transform(rxQueue chan messages.Sailboat, xmtQueue chan messages.Boat) {
 	sailboatHistory := make(map[string]messages.Sailboat)
 
 	for latest := range rxQueue {
-
 		lastKnown, found := sailboatHistory[latest.Name]
 		if found {
 			t0 := lastKnown.Timestamp

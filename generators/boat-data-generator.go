@@ -2,15 +2,14 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"math"
 	"time"
 	"math/rand"
-	"math"
-	"github.com/segmentio/kafka-go"
 	"github.com/augustwenty/go-crash/messages"
-	"encoding/json"
+	"github.com/segmentio/kafka-go"
 )
- 
 
 func main() {
 	fmt.Println("Starting....")
@@ -20,7 +19,7 @@ func main() {
 }
 
 // SendBoatData ...
-func SendBoatData(numMessages int, dt float32) {
+func SendBoatData(numMessages int, dt float64) {
 	speedboatConf := kafka.WriterConfig{
 		Brokers:  []string{"localhost:9092"},
 		Topic:    "raw_speedboat_data",
@@ -35,23 +34,22 @@ func SendBoatData(numMessages int, dt float32) {
 	}
 	sailboatWriter := kafka.NewWriter(sailboatConf)
 
-
 	speedboatNames := []string{"SS Hare", "The Flying Wasp", "Slice of Life", "Dont Crash Me"}
 	sailboatNames := []string{"SS Slow", "SS Windbag", "Slow n Steady", "Tow Me"}
 
 	speedboatIC := GenerateRandomBoatInitialConditions(speedboatNames)
 	sailboatIC := GenerateRandomBoatInitialConditions(sailboatNames)
 
-	t := float32(0)
-	
+	t := float64(0)
+
 	speedboatMsgs := make([]kafka.Message, len(speedboatNames))
 	sailboatMsgs := make([]kafka.Message, len(sailboatNames))
 
-	for i:=0; i < numMessages; i++ {
+	for i := 0; i < numMessages; i++ {
 		for i, boatIC := range speedboatIC {
 			speedboatMsgValue, _ := json.Marshal(NewSpeedboatMessage(boatIC.Name, t, boatIC.Position, boatIC.Velocity))
 			speedboatMsgs[i] = kafka.Message{
-				Key: []byte(boatIC.Name),
+				Key:   []byte(boatIC.Name),
 				Value: []byte(string(speedboatMsgValue)),
 			}
 			fmt.Println(string(speedboatMsgValue))
@@ -60,7 +58,7 @@ func SendBoatData(numMessages int, dt float32) {
 		for i, boatIC := range sailboatIC {
 			sailboatMsgValue, _ := json.Marshal(NewSailboatMessage(boatIC.Name, t, boatIC.Position, boatIC.Velocity))
 			sailboatMsgs[i] = kafka.Message{
-				Key: []byte(boatIC.Name),
+				Key:   []byte(boatIC.Name),
 				Value: []byte(string(sailboatMsgValue)),
 			}
 			fmt.Println(string(sailboatMsgValue))
@@ -69,21 +67,22 @@ func SendBoatData(numMessages int, dt float32) {
 		speedboatWriter.WriteMessages(context.Background(), speedboatMsgs...)
 		sailboatWriter.WriteMessages(context.Background(), sailboatMsgs...)
 
-		t = t+dt
+		t = t + dt
 	}
 
 	if err := speedboatWriter.Close(); err != nil {
 		fmt.Println("Couldn't close speedboat writer")
 	}
-	
+
 	if err := sailboatWriter.Close(); err != nil {
 		fmt.Println("Couldn't close speedboat writer")
 	}
 }
+
 // GenerateRandomVector2D ...
-func GenerateRandomVector2D(maxMagnitude float32) messages.Vector2D {
-	maxFactor := maxMagnitude/float32(math.Sqrt(2))
-	return messages.Vector2D{X: maxFactor*rand.Float32(), Y: maxFactor*rand.Float32()}
+func GenerateRandomVector2D(maxMagnitude float64) messages.Vector2D {
+	maxFactor := maxMagnitude / float64(math.Sqrt(2))
+	return messages.Vector2D{X: maxFactor * rand.Float64(), Y: maxFactor * rand.Float64()}
 }
 
 // GenerateRandomBoatInitialConditions ...
@@ -95,22 +94,22 @@ func GenerateRandomBoatInitialConditions(boatNames []string) []messages.Boat {
 		boatsIC[i] = messages.Boat{Name: name, Position: r0, Velocity: v0}
 	}
 
-	return boatsIC;
+	return boatsIC
 }
 
 // NewSpeedboatMessage ...
-func NewSpeedboatMessage(name string, t float32, r0 messages.Vector2D, v0 messages.Vector2D) messages.Speedboat {
+func NewSpeedboatMessage(name string, t float64, r0 messages.Vector2D, v0 messages.Vector2D) messages.Speedboat {
 	position := GetBoatPosition(t, r0, v0)
 	return messages.Speedboat{Name: name, Position: position, Velocity: v0, Timestamp: t}
 }
 
 // NewSailboatMessage ...
-func NewSailboatMessage(name string, t float32, r0 messages.Vector2D, v0 messages.Vector2D) messages.Sailboat {
+func NewSailboatMessage(name string, t float64, r0 messages.Vector2D, v0 messages.Vector2D) messages.Sailboat {
 	position := GetBoatPosition(t, r0, v0)
 	return messages.Sailboat{Name: name, Position: position, Timestamp: t}
 }
 
 // GetBoatPosition ...
-func GetBoatPosition(t float32, r0 messages.Vector2D, v0 messages.Vector2D) messages.Vector2D {
+func GetBoatPosition(t float64, r0 messages.Vector2D, v0 messages.Vector2D) messages.Vector2D {
 	return messages.Vector2D{X: r0.X + v0.X*t, Y: r0.Y + v0.Y*t}
 }

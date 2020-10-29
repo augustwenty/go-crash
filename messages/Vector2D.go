@@ -31,8 +31,9 @@ func AverageRateOfChange(v0 Vector2D, v1 Vector2D, t0 float64, t1 float64) Vecto
 	}
 
 	dt := t1 - t0
+
 	if dt != 0 {
-		velocity := VectorDifference(v0, v1)
+		velocity = VectorDifference(v0, v1)
 		velocity.X /= dt
 		velocity.Y /= dt
 	}
