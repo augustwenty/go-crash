@@ -1,5 +1,9 @@
 package messages
 
+import (
+	"math"
+)
+
 // Vector2D ...
 type Vector2D struct {
 	X float64 `json:"x"`
@@ -22,8 +26,8 @@ func VectorDifference(v0 Vector2D, v1 Vector2D) Vector2D {
 func AverageRateOfChange(v0 Vector2D, v1 Vector2D, t0 float64, t1 float64) Vector2D {
 	
 	velocity := Vector2D {
-		X: 0,
-		Y: 0,
+		X: math.NaN(),
+		Y: math.NaN(),
 	}
 
 	dt := t1 - t0
