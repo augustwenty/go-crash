@@ -14,17 +14,9 @@ import (
 
 func main() {
 	fmt.Println("Starting....")
-
-	//sp1 := NewSpeedboatMessage(0, messages.Vector2D{X:1.1, Y:1.5} , messages.Vector2D{X: 1.1, Y:1.2})
-	// go SendDummyData()
 	go SendBoatData(5, .1)
-	bnames := []string{"hi", "bye", "cye"}
-	for _, val := range bnames {
-		fmt.Println(val);
-		fmt.Println(rand.Float32())
-	}
 	fmt.Println("Boat generator started...")
-	time.Sleep(100 * time.Second)
+	time.Sleep(10 * time.Minute)
 }
 
 // SendBoatData ...
@@ -78,6 +70,14 @@ func SendBoatData(numMessages int, dt float32) {
 		sailboatWriter.WriteMessages(context.Background(), sailboatMsgs...)
 
 		t = t+dt
+	}
+
+	if err := speedboatWriter.Close(); err != nil {
+		fmt.Println("Couldn't close speedboat writer")
+	}
+	
+	if err := sailboatWriter.Close(); err != nil {
+		fmt.Println("Couldn't close speedboat writer")
 	}
 }
 // GenerateRandomVector2D ...
