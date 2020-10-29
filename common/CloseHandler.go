@@ -11,7 +11,7 @@ import (
 var shutdownCompleteContext context.Context
 
 // InitCloseHandler - initializes a ctrl+c handler with a signal/event upon termination
-// Returns (cancellation context, shutdown complete event)
+// Returns (cancellation context, shutdown complete signal)
 func InitCloseHandler() (context.Context, context.CancelFunc) {
 	cancellationContext, cancelFunction := context.WithCancel(context.Background())
 	shutdownContext, shutdownCompleteSignal := context.WithCancel(context.Background())
@@ -38,6 +38,7 @@ func monitorForTermination(osSignals chan os.Signal, cancelFunction context.Canc
 func WaitForShutdownComplete() {
 	select {
 	case <- shutdownCompleteContext.Done():
+		fmt.Println("Shutdown complete!")
 		return
 	}
 }
