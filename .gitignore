@@ -16,4 +16,8 @@
 
 # Build output (blacklist for now until better way)
 **/transforms/transforms
+**/transforms/sailboat/sailboatTransform
+**/transforms/speedboat/speedboatTransform
+**/transforms/collisionDetector/collisionDetector
+**/generators/boat-data-generator
 **/messages/messages
