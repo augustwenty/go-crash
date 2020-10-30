@@ -21,3 +21,9 @@
 **/transforms/collisionDetector/collisionDetector
 **/generators/boat-data-generator
 **/messages/messages
+
+# Mac
+**/.DS_Store
+
+# External packages
+**/github.com
