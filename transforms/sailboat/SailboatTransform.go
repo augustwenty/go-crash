@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	fmt.Println("Starting velocity transformer....")
+	fmt.Println("Starting sailboat transformer....")
 
 	cancellationContext, signalShutdownComplete := common.InitCloseHandler()
 	
@@ -37,7 +37,7 @@ func readSailboats(cancellationContext context.Context, rxQueue chan messages.Sa
 	sailboatReader := kafka.NewReader(sailboatReaderConf)
 
 	for {
-		fmt.Println("Waiting to receive message...")
+		// fmt.Println("Waiting to receive message...")
 		msg, err := sailboatReader.ReadMessage(cancellationContext)
 		
 		if err == context.Canceled {
@@ -46,7 +46,7 @@ func readSailboats(cancellationContext context.Context, rxQueue chan messages.Sa
 		} else if err != nil {
 			fmt.Printf("ERROR: an error occurred reading messages -> %v\n", err)
 		} else {
-			fmt.Printf("Receiving message %v\n", string(msg.Key))
+			// fmt.Printf("Receiving message %v\n", string(msg.Key))
 
 			var sailBoat messages.Sailboat
 			err := json.Unmarshal(msg.Value, &sailBoat)
@@ -59,7 +59,6 @@ func readSailboats(cancellationContext context.Context, rxQueue chan messages.Sa
 	}
 
 	fmt.Println("Closing reader and receive queue...")
-
 	if err := sailboatReader.Close(); err != nil {
 		fmt.Println("Couldn't close sailboat reader...")
 	}
@@ -72,10 +71,10 @@ func transform(rxQueue chan messages.Sailboat, xmtQueue chan messages.Boat) {
 	sailboatHistory := make(map[string]messages.Sailboat)
 
 	for latest := range rxQueue {
-		fmt.Println("Processing message for ", latest.Name)
+		// fmt.Println("Processing message for ", latest.Name)
 		lastKnown, found := sailboatHistory[latest.Name]
 		if found {
-			fmt.Printf("Transforming message for %v...\n", latest.Name)
+			// fmt.Printf("Shiver me timbers! It's the %v...\n", latest.Name)
 			t0 := lastKnown.Timestamp
 			t1 := latest.Timestamp
 			p0 := lastKnown.Position
@@ -93,7 +92,7 @@ func transform(rxQueue chan messages.Sailboat, xmtQueue chan messages.Boat) {
 
 			xmtQueue <- boat
 		} else {
-			fmt.Printf("Adding %v...\n", latest.Name)
+			// fmt.Printf("Yo ho ho! from the %v...\n", latest.Name)
 			sailboatHistory[latest.Name] = latest
 		}
 	}
@@ -112,19 +111,20 @@ func sendGeneralizedBoatData(xmtQueue chan messages.Boat, signalShutdownComplete
 	boatMessages := make([]kafka.Message, 1)
 
 	for boat := range xmtQueue {
-		fmt.Printf("Sending general boat data for %v...\n", boat.Name)
+		fmt.Printf("Ahoy! From the %v %v\n", boat.Type, boat.Name)
 		payload, _ := json.Marshal(boat)
 		boatMessages[0] = kafka.Message {
 			Key:   []byte(boat.Name),
 			Value: []byte(string(payload)),
 		}
-		err := boatWriter.WriteMessages(context.Background(), boatMessages...)
 
-		if err != nil {
-			fmt.Println("ERROR: Sending boat message -> ", err)
-		} else {
-			fmt.Println("Message sent -> ", string(payload))
-		}
+		boatWriter.WriteMessages(context.Background(), boatMessages...)
+		// err := boatWriter.WriteMessages(context.Background(), boatMessages...)
+		// if err != nil {
+		// 	fmt.Println("ERROR: Sending boat message -> ", err)
+		// } else {
+		// 	fmt.Println("Message sent -> ", string(payload))
+		// }
 	}
 
 	fmt.Println("Stopping transmission...")

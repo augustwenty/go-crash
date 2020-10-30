@@ -8,6 +8,6 @@ require (
 	github.com/segmentio/kafka-go v0.4.8
 )
 
-replace github.com/augustwenty/go-crash/messages => ../messages
+replace github.com/augustwenty/go-crash/messages => ../../messages
 
-replace github.com/augustwenty/go-crash/common => ../common
+replace github.com/augustwenty/go-crash/common => ../../common
