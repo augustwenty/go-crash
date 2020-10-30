@@ -1,4 +1,4 @@
-module go-crash/github.com/augustwenty
+module go-crash
 
 go 1.15
 

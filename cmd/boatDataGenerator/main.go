@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go-crash/messages"
 	"math"
-	"time"
 	"math/rand"
-	"github.com/augustwenty/go-crash/messages"
+	"time"
+
 	"github.com/segmentio/kafka-go"
 )
 
