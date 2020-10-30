@@ -1,0 +1,21 @@
+{
+  "name": "display",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "clean": "rm dist/bundle.js",
+    "start": "parcel index.html",
+    "build-prod": "parcel build index.html",
+    "test": "jest"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "jest": "^26.6.1",
+    "parcel-bundler": "^1.12.4"
+  }
+}

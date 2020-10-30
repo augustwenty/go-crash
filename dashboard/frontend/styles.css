@@ -1,0 +1,12 @@
+body {
+    font-family: "Helvetica", sans-serif;
+}
+
+canvas {
+    background-color: #ccd6fa
+}
+
+.infoPanel {
+    float: left;
+    width: 50%;
+}
