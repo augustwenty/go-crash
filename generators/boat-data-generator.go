@@ -35,7 +35,7 @@ func SendBoatData(numMessages int, dt float64) {
 	sailboatWriter := kafka.NewWriter(sailboatConf)
 
 	speedboatNames := []string{"SS Hare", "The Flying Wasp", "Slice of Life", "Dont Crash Me"}
-	sailboatNames := []string{"SS Slow", "SS Windbag", "Slow n Steady", "Tow Me"}
+	sailboatNames := []string{"SS Turtle", "SS Windbag", "Slow n Steady", "Tow Me"}
 
 	speedboatIC := GenerateRandomBoatInitialConditions(speedboatNames)
 	sailboatIC := GenerateRandomBoatInitialConditions(sailboatNames)
