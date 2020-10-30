@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"github.com/segmentio/kafka-go"
-	"github.com/augustwenty/go-crash/common"
-	"github.com/augustwenty/go-crash/messages"
 	"encoding/json"
+	"fmt"
+	"go-crash/common"
+	"go-crash/messages"
+
+	"github.com/segmentio/kafka-go"
 )
 
 func main() {
@@ -14,17 +15,16 @@ func main() {
 	fmt.Println("Starting fake UI receiver....")
 
 	cancellationContext, signalShutdownComplete := common.InitCloseHandler()
-	
+
 	rxQueue := make(chan messages.Boat)
 	xmtQueue := make(chan messages.BoatDetections)
-	
+
 	go readBoats(cancellationContext, rxQueue)
 	go transform(rxQueue, xmtQueue)
 	go sendCollisionDetections(xmtQueue, signalShutdownComplete)
 
 	common.WaitForShutdownComplete()
 }
-
 
 func readBoats(cancellationContext context.Context, rxQueue chan messages.Boat) {
 	boatReaderConf := kafka.ReaderConfig{
@@ -39,10 +39,10 @@ func readBoats(cancellationContext context.Context, rxQueue chan messages.Boat) 
 	for {
 		// fmt.Println("Waiting to receive message...")
 		msg, err := boatReader.ReadMessage(cancellationContext)
-		
+
 		if err == context.Canceled {
 			fmt.Println("Shutting down, reading cancelled...")
-			break;
+			break
 		} else if err != nil {
 			fmt.Printf("ERROR: an error occurred reading messages -> %v\n", err)
 		} else {
@@ -68,9 +68,9 @@ func transform(rxQueue chan messages.Boat, xmtQueue chan messages.BoatDetections
 
 	for latest := range rxQueue {
 		boatDetections := messages.BoatDetections{
-			Boat: latest,
+			Boat:             latest,
 			CollisionWarning: false,
-			Obliterated: false,
+			Obliterated:      false,
 		}
 
 		xmtQueue <- boatDetections
@@ -92,7 +92,7 @@ func sendCollisionDetections(xmtQueue chan messages.BoatDetections, signalShutdo
 	for boatDetection := range xmtQueue {
 		fmt.Printf("The %v %v is coming your way!\n", boatDetection.Boat.Type, boatDetection.Boat.Name)
 		payload, _ := json.Marshal(boatDetection)
-		boatMessages[0] = kafka.Message {
+		boatMessages[0] = kafka.Message{
 			Key:   []byte(boatDetection.Boat.Name),
 			Value: []byte(string(payload)),
 		}
