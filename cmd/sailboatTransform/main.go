@@ -106,6 +106,7 @@ func sendGeneralizedBoatData(xmtQueue chan messages.Boat, signalShutdownComplete
 		Brokers:  []string{"localhost:9092"},
 		Topic:    "boat_data",
 		Balancer: &kafka.Hash{},
+		Async:    true,
 	}
 	boatWriter := kafka.NewWriter(boatWriterConf)
 	boatMessages := make([]kafka.Message, 1)
