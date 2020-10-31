@@ -3,7 +3,16 @@ package kinematics
 import (
 	"go-crash/messages"
 	"math"
+	"fmt"
 )
+
+// DistanceToLine distance from r0 to line r1+v1*t
+func DistanceToLine(r0 messages.Vector2D, r1 messages.Vector2D, v1 messages.Vector2D) float64 {
+	hyp := r0.Subtract(r1)
+	d := math.Abs(hyp.Cross(v1))*(v1.Magnitude())
+	fmt.Println(d)
+	return d
+}
 
 // LinearPosition - Position after time t elapsed of object traversing linear path with initial position r0/initial velocity v0
 func LinearPosition(t float64, r0 messages.Vector2D, v0 messages.Vector2D) messages.Vector2D {
@@ -13,8 +22,15 @@ func LinearPosition(t float64, r0 messages.Vector2D, v0 messages.Vector2D) messa
 // FindCrossingTimes - Find times where each object reaches interesction point of the two paths
 func FindCrossingTimes(r1 messages.Vector2D, v1 messages.Vector2D, r2 messages.Vector2D, v2 messages.Vector2D) (float64, float64) {
 	t1, t2 := math.NaN(), math.NaN()
-	if v1.Unit().Equals(v2.Unit(), 1e-10) {
+	eps := 1e-10
+	if v1.Unit().Equals(v2.Unit(), eps) && (DistanceToLine(r1, r2, v2) > eps) {
+		fmt.Println(DistanceToLine(r1, r2, v2))
 		return t1, t2
+	}
+
+	if (v2.Subtract(v1).Dot(v1) < 0 ) && (DistanceToLine(r1, r2, v2) < eps) {
+		t12 := (r1.X-r2.X) / (v2.X-v1.X)
+		return t12, t12
 	}
 
 	if v1.X == 0 {

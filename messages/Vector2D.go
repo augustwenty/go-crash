@@ -59,6 +59,11 @@ func (u Vector2D) Equals(v Vector2D, threshold float64) bool {
 	return u.Subtract(v).Magnitude() < threshold
 }
 
+// Cross - 2D 'Cross product'
+func (u Vector2D) Cross(v Vector2D) float64 {
+	return u.X*v.Y - v.X*u.Y
+}
+
 // AverageRateOfChange - calculates velocity between two vectors
 func AverageRateOfChange(v0 Vector2D, v1 Vector2D, t0 float64, t1 float64) Vector2D {
 	
