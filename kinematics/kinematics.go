@@ -29,7 +29,12 @@ func FindCrossingTimes(r1 messages.Vector2D, v1 messages.Vector2D, r2 messages.V
 	}
 
 	if (v2.Subtract(v1).Dot(v1) < 0 ) && (DistanceToLine(r1, r2, v2) < eps) {
-		t12 := (r1.X-r2.X) / (v2.X-v1.X)
+		var t12 float64
+		if v1.X == v2.X {
+			t12 = (r1.Y - r2.Y) / (v2.Y - v1.Y)
+		} else {
+			t12 = (r1.X - r2.X) / (v2.X - v1.X)
+		}
 		return t12, t12
 	}
 
