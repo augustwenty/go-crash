@@ -16,14 +16,13 @@ func TestCrossingTimes(t *testing.T) {
 	v2 := messages.Vector2D{X:0, Y:1}
 
 	t1, t2 := FindCrossingTimes(r1, v1, r2, v2)
-	fmt.Println(t1, t2)
 
 	if t1 != 0.5 || t2 != 1 {
 		t.Fail()
 	}
 }
 
-func TestCollinearProperChaseCase(t *testing.T) {
+func TestColinearProperChaseCase(t *testing.T) {
 	r1 := messages.Vector2D{X:0, Y:0}
 	v1 := messages.Vector2D{X:2, Y:2}
 
@@ -37,7 +36,7 @@ func TestCollinearProperChaseCase(t *testing.T) {
 	}
 }
 
-func TestCollinearHeadOnCase(t *testing.T) {
+func TestColinearHeadOnCase(t *testing.T) {
 	r1 := messages.Vector2D{X:0, Y:0}
 	v1 := messages.Vector2D{X:1, Y:1}
 
@@ -51,7 +50,7 @@ func TestCollinearHeadOnCase(t *testing.T) {
 	}
 }
 
-func TestCollinearCantCatchMeCase(t *testing.T) {
+func TestColinearCantCatchMeCase(t *testing.T) {
 	r1 := messages.Vector2D{X:0, Y:0}
 	v1 := messages.Vector2D{X:2, Y:2}
 
@@ -65,7 +64,7 @@ func TestCollinearCantCatchMeCase(t *testing.T) {
 	}
 }
 
-func TestCollinearStraightUpCase(t *testing.T) {
+func TestColinearStraightUpCase(t *testing.T) {
 	r1 := messages.Vector2D{X:0, Y:0}
 	v1 := messages.Vector2D{X:0, Y:2}
 
@@ -79,7 +78,7 @@ func TestCollinearStraightUpCase(t *testing.T) {
 	}
 }
 
-func TestCollinearStraightUpCantCatchMeCase(t *testing.T) {
+func TestColinearStraightUpCantCatchMeCase(t *testing.T) {
 	r1 := messages.Vector2D{X:0, Y:0}
 	v1 := messages.Vector2D{X:0, Y:2}
 

@@ -10,7 +10,6 @@ import (
 func DistanceToLine(r0 messages.Vector2D, r1 messages.Vector2D, v1 messages.Vector2D) float64 {
 	hyp := r0.Subtract(r1)
 	d := math.Abs(hyp.Cross(v1))*(v1.Magnitude())
-	fmt.Println(d)
 	return d
 }
 
@@ -29,7 +28,7 @@ func FindCrossingTimes(r1 messages.Vector2D, v1 messages.Vector2D, r2 messages.V
 		return t1, t2
 	}
 
-	//Collinear and will intersect
+	//Colinear and will intersect
 	if (v2.Subtract(v1).Dot(v1) < 0 ) && (DistanceToLine(r1, r2, v2) < eps) {
 		fmt.Println("bababa")
 		var t12 float64
