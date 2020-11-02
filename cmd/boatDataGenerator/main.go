@@ -12,21 +12,36 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+type kafkaInterface interface {
+	NewWriter(config kafka.WriterConfig) *kafka.Writer
+}
+
+type boatDataGenerator struct {
+	speedboatConf  kafka.WriterConfig
+	kafkaInterface kafkaInterface
+}
+
+func (k *boatDataGenerator) NewWriter(config kafka.WriterConfig) *kafka.Writer {
+	return kafka.NewWriter(config)
+}
+
 func main() {
 	fmt.Println("Starting....")
-	go SendBoatData(5, .1)
+
+	boatDataGenerator := boatDataGenerator{
+		speedboatConf: kafka.WriterConfig{
+			Brokers:  []string{"localhost:9092"},
+			Topic:    "raw_speedboat_data",
+			Balancer: &kafka.Hash{},
+		}}
+	go boatDataGenerator.SendBoatData(5, .1)
 	fmt.Println("Boat generator started...")
 	time.Sleep(10 * time.Minute)
 }
 
 // SendBoatData ...
-func SendBoatData(numMessages int, dt float64) {
-	speedboatConf := kafka.WriterConfig{
-		Brokers:  []string{"localhost:9092"},
-		Topic:    "raw_speedboat_data",
-		Balancer: &kafka.Hash{},
-	}
-	speedboatWriter := kafka.NewWriter(speedboatConf)
+func (k *boatDataGenerator) SendBoatData(numMessages int, dt float64) {
+	speedboatWriter := k.kafkaInterface.NewWriter(k.speedboatConf)
 
 	sailboatConf := kafka.WriterConfig{
 		Brokers:  []string{"localhost:9092"},
