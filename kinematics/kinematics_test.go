@@ -4,7 +4,6 @@ import (
 	"math"
 	"go-crash/messages"
 	"testing"
-	"fmt"
 )
 
 // TestCrossingTimes - simple intersection test
