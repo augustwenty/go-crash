@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"go-crash/common"
 	"go-crash/messages"
+	"go-crash/kinematics"
 
 	"github.com/segmentio/kafka-go"
 )
@@ -65,11 +66,29 @@ func readBoats(cancellationContext context.Context, rxQueue chan messages.Boat) 
 }
 
 func transform(rxQueue chan messages.Boat, xmtQueue chan messages.BoatDetections) {
+	
+	boatHistory := make(map[string]messages.Boat)
+	boatCollisionWarning := false 
+	warningDistance := 30.0
+	minDistance := 10.0
 
 	for latest := range rxQueue {
+		r1, v1 := latest.Position, latest.Velocity
+		for otherName, otherBoat := range boatHistory {
+			if latest.Name == otherName {
+				continue
+			}
+			r2, v2 := otherBoat.Position, otherBoat.Velocity
+			if kinematics.ObjectsTooClose(r1, v1, r2, v2, minDistance, warningDistance) {
+				boatCollisionWarning = true
+				break
+			}
+		}
+
+		boatHistory[latest.Name] = latest
 		boatDetections := messages.BoatDetections{
 			Boat:             latest,
-			CollisionWarning: false,
+			CollisionWarning: boatCollisionWarning,
 			Obliterated:      false,
 		}
 

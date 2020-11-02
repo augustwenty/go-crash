@@ -78,3 +78,17 @@ func TestCollinearStraightUpCase(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestCollinearStraightUpCantCatchMeCase(t *testing.T) {
+	r1 := messages.Vector2D{X:0, Y:0}
+	v1 := messages.Vector2D{X:0, Y:2}
+
+	r2 := messages.Vector2D{X: 0, Y:1}
+	v2 := messages.Vector2D{X: 0, Y:4}
+
+	t1, t2 := FindCrossingTimes(r1, v1, r2, v2)
+
+	if !(math.IsNaN(t1) && math.IsNaN(t2))  {
+		t.Fail()
+	}
+}
