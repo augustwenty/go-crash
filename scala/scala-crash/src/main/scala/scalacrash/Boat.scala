@@ -22,10 +22,6 @@ object Boat {
                 orientation, speedboat.Timestamp)
     }
 
-    // def toJSONString(boat: Boat): String = {
-    //         compact(write(boat))
-    // }
-
     def toJSONStringBrutish(boat: Boat): String = {
         val jsonString = s"""{"Name":"${boat.Name}","Type":"${boat.Type}","Position":{"x":${boat.Position("x")},"y":${boat.Position("y")}},"Velocity":{"x":${boat.Velocity("x")},"y":${boat.Velocity("y")}},"Orientation":${boat.Orientation},"Timestamp":${boat.Timestamp}}"""
         jsonString
