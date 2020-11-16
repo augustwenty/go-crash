@@ -13,8 +13,6 @@ object Speedboat {
     def fromJSON(jsonString: String): Speedboat = {
         implicit val formats = DefaultFormats
         val jsonObj = parse(jsonString)
-        val speedboat = jsonObj.extract[Speedboat]
-        println(speedboat)
-        speedboat
+        jsonObj.extract[Speedboat]
     }
 }

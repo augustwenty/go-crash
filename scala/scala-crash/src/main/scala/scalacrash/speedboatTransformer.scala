@@ -29,10 +29,12 @@ object speedboatTransformer extends App {
   speedboatTransform.print()
   env.execute()
 
-  def transformSpeedboat(stream: DataStream[String]) : DataStream[Speedboat] = {
+  def transformSpeedboat(stream: DataStream[String]) : DataStream[String] = {
             // Count how many times a word has been read off of the tatanka Kafka topic in 15 seconds,
             // then send that to kafka as a Tuple to the monkey topic
             stream.map(x => Speedboat.fromJSON(x))
+                  .map(x => Boat.transform(x))
+                  .map(x => Boat.toJSONStringBrutish(x))
 
             // stream.filter(_ != "poop") // Remove all the poop from the topic
             //     .map { (_, 1) }                       // Convert each element to a Tuple. The original string is the first element, second element is number 1
