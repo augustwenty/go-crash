@@ -5,7 +5,6 @@ import org.apache.flink.streaming.connectors.kafka._
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import java.util.Properties
-import spray.json._
 
 object speedboatTransformer extends App {
   println("Hello, World!")
@@ -20,18 +19,20 @@ object speedboatTransformer extends App {
                 new SimpleStringSchema,
                 properties) 
 
-  val kafkaProducer = new FlinkKafkaProducer[String](
-                "localhost:9092",
-                "boat_data",
-                new SimpleStringSchema)
+  // val kafkaProducer = new FlinkKafkaProducer[String](
+  //               "localhost:9092",
+  //               "boat_data",
+  //               new SimpleStringSchema)
 
   val speedboatTransform = transformSpeedboat(env.addSource(kafkaConsumer))
 
-  def transformSpeedboat(stream: DataStream[String]) : DataStream[String] = {
-      stream
+  speedboatTransform.print()
+  env.execute()
+
+  def transformSpeedboat(stream: DataStream[String]) : DataStream[Speedboat] = {
             // Count how many times a word has been read off of the tatanka Kafka topic in 15 seconds,
             // then send that to kafka as a Tuple to the monkey topic
-            // stream.flatMap()
+            stream.map(x => Speedboat.fromJSON(x))
 
             // stream.filter(_ != "poop") // Remove all the poop from the topic
             //     .map { (_, 1) }                       // Convert each element to a Tuple. The original string is the first element, second element is number 1
