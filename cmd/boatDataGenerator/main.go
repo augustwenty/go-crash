@@ -9,7 +9,6 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/augustwenty/go-crash/messages"
 	"github.com/segmentio/kafka-go"
 )
 
