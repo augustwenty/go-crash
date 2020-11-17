@@ -1,8 +1,6 @@
 package scalacrash
 
 import net.liftweb.json._
-import net.liftweb.json.JsonDSL._
-import net.liftweb.json.JsonAST._
 import net.liftweb.json.Serialization.write
 
 case class Boat (
@@ -22,8 +20,8 @@ object Boat {
                 orientation, speedboat.Timestamp)
     }
 
-    def toJSONStringBrutish(boat: Boat): String = {
-        val jsonString = s"""{"Name":"${boat.Name}","Type":"${boat.Type}","Position":{"x":${boat.Position("x")},"y":${boat.Position("y")}},"Velocity":{"x":${boat.Velocity("x")},"y":${boat.Velocity("y")}},"Orientation":${boat.Orientation},"Timestamp":${boat.Timestamp}}"""
-        jsonString
+    def toJSONString(boat: Boat): String = {
+        implicit val formats = DefaultFormats
+        write(boat)
     }
 }
