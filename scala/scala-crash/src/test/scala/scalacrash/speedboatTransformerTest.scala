@@ -41,6 +41,7 @@ class speedboatTransformerTest extends AnyFunSuite with BeforeAndAfter {
     val expectedSpeedboat = Speedboat("Tow Me", Map("x" -> 0.7F, "y" -> 0.5F), Map("x" -> 1.0F, "y" -> 2.0F), 0.4F)
     assert(CollectSink.values.head.equals(expectedSpeedboat))
   }
+
 }
 
 class CollectSink extends SinkFunction[Speedboat] {
