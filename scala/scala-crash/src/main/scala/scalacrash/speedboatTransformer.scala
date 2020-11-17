@@ -31,7 +31,6 @@ object speedboatTransformer extends App {
   def transformSpeedboat(stream: DataStream[String]) : DataStream[String] = {
             stream.map(Speedboat)
                   .map(x => Boat.transform(x))
-                  .map(x => Boat.toJSONStringBrutish(x))
+                  .map(x => Boat.toJSONString(x))
         }
 }
-

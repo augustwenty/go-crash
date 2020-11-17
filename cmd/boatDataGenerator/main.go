@@ -14,7 +14,7 @@ import (
 
 func main() {
 	fmt.Println("Starting....")
-	go SendBoatData(5, .1)
+	go SendBoatData(1000, .2)
 	fmt.Println("Boat generator started...")
 	time.Sleep(10 * time.Minute)
 }
@@ -25,6 +25,7 @@ func SendBoatData(numMessages int, dt float64) {
 		Brokers:  []string{"localhost:9092"},
 		Topic:    "raw_speedboat_data",
 		Balancer: &kafka.Hash{},
+		Async:    true,
 	}
 	speedboatWriter := kafka.NewWriter(speedboatConf)
 
@@ -32,6 +33,7 @@ func SendBoatData(numMessages int, dt float64) {
 		Brokers:  []string{"localhost:9092"},
 		Topic:    "raw_sailboat_data",
 		Balancer: &kafka.Hash{},
+		Async:    true,
 	}
 	sailboatWriter := kafka.NewWriter(sailboatConf)
 
@@ -69,6 +71,8 @@ func SendBoatData(numMessages int, dt float64) {
 		sailboatWriter.WriteMessages(context.Background(), sailboatMsgs...)
 
 		t = t + dt
+
+		time.Sleep(1000 * time.Millisecond)
 	}
 
 	if err := speedboatWriter.Close(); err != nil {
@@ -90,8 +94,8 @@ func GenerateRandomVector2D(maxMagnitude float64) messages.Vector2D {
 func GenerateRandomBoatInitialConditions(boatNames []string) []messages.Boat {
 	boatsIC := make([]messages.Boat, len(boatNames))
 	for i, name := range boatNames {
-		r0 := GenerateRandomVector2D(1.0)
-		v0 := GenerateRandomVector2D(1.0)
+		r0 := GenerateRandomVector2D(300)
+		v0 := GenerateRandomVector2D(10)
 		boatsIC[i] = messages.Boat{Name: name, Position: r0, Velocity: v0}
 	}
 

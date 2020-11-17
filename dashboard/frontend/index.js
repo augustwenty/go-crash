@@ -1,7 +1,5 @@
-
 const SAMPLE_BOAT = { "Name": "Slice of Life", "Position": { "x": 200, "y": 400 }, "Velocity": { "x": 0.36431035, "y": 0.5753303 }, "Timestamp": 0.3 }
 const SAMPLE_BOAT_2 = { "Name": "Stugots", "Position": { "x": 21, "y": 40 }, "Velocity": { "x": 0.36431035, "y": -0.5753303 }, "Timestamp": 0.3 }
-
 
 function onMessageReceived(messageData){
     console.log('Message from server ', messageData);
@@ -24,7 +22,6 @@ function initWebSocket() {
         onMessageReceived(event.data)
     });
 }
-
 
 function appendToLog(message, log) {
     log.innerText += message + "\n";
@@ -53,7 +50,8 @@ function renderBoat(canvasCtx, boat) {
 
     let boatVelX = boat["Velocity"]["x"]
     let boatVelY = boat["Velocity"]["y"]
-    let boatHeading = Math.atan2(boatVelY, boatVelX);
+
+    let boatHeading = boat["Orientation"]
 
     // draw boat rotated to its heading
     canvasCtx.translate(boatX, boatY);
@@ -61,7 +59,7 @@ function renderBoat(canvasCtx, boat) {
     canvasCtx.translate(-boatX, -boatY);
 
     canvasCtx.fillStyle = "#9a9a9a"
-    canvasCtx.fillRect(boatX - 20, boatY -5, 40, 10);
+    canvasCtx.fillRect(boatX - 20 , boatY -5, 40, 10);
 
     //reset context
     canvasCtx.resetTransform()
@@ -69,7 +67,7 @@ function renderBoat(canvasCtx, boat) {
 
     //write boat name
     canvasCtx.font = "16px Arial";
-    canvasCtx.fillText(boatName, boatX - 20, boatY - 10);
+    canvasCtx.fillText(boatName, boatX - 20 , boatY - 10);
 }
 
 var SimulationState = {}
@@ -79,8 +77,6 @@ const canvas = document.getElementById("display-canvas")
 
 function main() {
     initWebSocket();
-    updateBoatInState(SAMPLE_BOAT)
-    updateBoatInState(SAMPLE_BOAT_2)
     render()
 }
 

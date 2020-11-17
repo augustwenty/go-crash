@@ -11,7 +11,7 @@ kafka.to.websocket:
       # https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md#topic-configuration-properties
       auto.offset.reset: latest
     kafka.topics:
-      - boats
+      - boat_data
     address: :8080
     # message.details: false
     # message.type: json
