@@ -1,5 +1,6 @@
 package scalacrash
 import net.liftweb.json._
+import org.apache.flink.api.common.functions.MapFunction
 
 case class Speedboat (
     Name: String,
@@ -8,11 +9,10 @@ case class Speedboat (
     Timestamp: Float
 )
 
-
-object Speedboat {
-    def fromJSON(jsonString: String): Speedboat = {
+object Speedboat extends MapFunction[String, Speedboat] {
+    override def map(value: String): Speedboat = {
         implicit val formats = DefaultFormats
-        val jsonObj = parse(jsonString)
+        val jsonObj = parse(value)
         jsonObj.extract[Speedboat]
     }
 }

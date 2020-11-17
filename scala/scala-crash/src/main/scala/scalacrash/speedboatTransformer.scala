@@ -2,7 +2,6 @@ package scalacrash
 
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.connectors.kafka._
-import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import java.util.Properties
 
@@ -30,7 +29,7 @@ object speedboatTransformer extends App {
   env.execute()
 
   def transformSpeedboat(stream: DataStream[String]) : DataStream[String] = {
-            stream.map(x => Speedboat.fromJSON(x))
+            stream.map(Speedboat)
                   .map(x => Boat.transform(x))
                   .map(x => Boat.toJSONStringBrutish(x))
         }
