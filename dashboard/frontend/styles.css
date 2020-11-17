@@ -6,6 +6,9 @@ canvas {
     background-color: #ccd6fa
 }
 
+#log {
+    overflow-x: scroll;
+}
 .infoPanel {
     float: left;
     width: 50%;
