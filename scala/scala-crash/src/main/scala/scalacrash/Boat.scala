@@ -21,8 +21,9 @@ object Boat {
     }
 
     def transform(sailboat: Sailboat): Boat = {
-        val orientation: Float = Math.atan2(sailboat.Velocity("y"), sailboat.Velocity("x")).toFloat
-        Boat(sailboat.Name, "speedboat", sailboat.Position, sailboat.Velocity,
+        val vel  = Map("x"->1F, "y"->2F)
+        val orientation: Float = 1.0F //Float = Math.atan2(sailboat.Velocity("y"), sailboat.Velocity("x")).toFloat
+        Boat(sailboat.Name, "sailboat", sailboat.Position, vel,
             orientation, sailboat.Timestamp)
     }
 
