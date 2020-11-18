@@ -20,6 +20,13 @@ object Boat {
                 orientation, speedboat.Timestamp)
     }
 
+    def transform(sailboat: Sailboat): Boat = {
+        val vel  = Map("x"->1F, "y"->2F)
+        val orientation: Float = 1.0F //Float = Math.atan2(sailboat.Velocity("y"), sailboat.Velocity("x")).toFloat
+        Boat(sailboat.Name, "sailboat", sailboat.Position, vel,
+            orientation, sailboat.Timestamp)
+    }
+
     def toJSONString(boat: Boat): String = {
         implicit val formats = DefaultFormats
         write(boat)
