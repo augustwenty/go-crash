@@ -3,4 +3,6 @@
 .metals/
 .vscode/
 project/
+target/.idea/
 target/
+.idea/
