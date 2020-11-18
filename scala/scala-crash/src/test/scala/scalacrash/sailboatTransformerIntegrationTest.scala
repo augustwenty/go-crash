@@ -7,6 +7,7 @@ import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.test.util.MiniClusterWithClientResource
 import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
+import net.liftweb.json._
 
 import scala.collection.mutable.ArrayBuffer 
 
@@ -24,6 +25,11 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
     flinkCluster.after()
   }
 
+  def boatToJson(boatJson: String) : Boat = {
+    implicit val formats = DefaultFormats
+    val jsonObj = parse(boatJson)
+    jsonObj.extract[Boat]
+  }
 
   test("executes flow") {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
@@ -32,19 +38,22 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
 
     val sailboatJSON1 = "{\"Name\":\"Tow Me\",\"Position\":{\"x\":0.7,\"y\":0.5},\"Timestamp\":0.4}"
     val sailboatJSON2 = "{\"Name\":\"Tow Me\",\"Position\":{\"x\":0.8,\"y\":0.6},\"Timestamp\":0.5}"
-    val sailboatJSON3 = "{\"Name\":\"Tow Me\",\"Position\":{\"x\":0.9,\"y\":0.7},\"Timestamp\":0.6}"
+    val sailboatJSON3 = "{\"Name\":\"Tow Me2\",\"Position\":{\"x\":0.9,\"y\":0.7},\"Timestamp\":0.6}"
+    val sailboatJSON4 = "{\"Name\":\"Tow Me\",\"Position\":{\"x\":0.9,\"y\":0.7},\"Timestamp\":0.6}"
 
     implicit val typeInfo = TypeInformation.of(classOf[String]) 
     
-    val stream = env.fromElements(sailboatJSON1, sailboatJSON2, sailboatJSON3)
+    val stream = env.fromElements(sailboatJSON1, sailboatJSON2, sailboatJSON3, sailboatJSON4)
     sailboatTransformer.transformSailboat(stream).addSink(new CollectSailboatTransformSink())
-
     env.execute()
 
-    print(CollectSailboatTransformSink.values)
+    assert(CollectSailboatTransformSink.values.size == 2)
 
-    val expectedSpeedboat = "{\"Name\":\"Tow Me\",\"Type\":\"speedboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}"
-    assert(CollectSailboatTransformSink.values.head.equals(expectedSpeedboat))
+    val expectedSailboat = boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"Sailboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}")
+    val actualSailboat = boatToJson(CollectSailboatTransformSink.values.head)
+
+    assert(actualSailboat.Name == expectedSailboat.Name)
+    assert(actualSailboat.Type == expectedSailboat.Type)
   }
 }
 
