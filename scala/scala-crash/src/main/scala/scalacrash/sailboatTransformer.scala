@@ -2,8 +2,11 @@ package scalacrash
 
 import java.util.Properties
 
+import org.apache.flink.api.common.functions.RichMapFunction
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.api.common.serialization.SimpleStringSchema
+import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
+import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction
 import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow
@@ -28,7 +31,7 @@ object sailboatTransformer extends App {
     "boat_data",
     new SimpleStringSchema)
 
-  val sailboatTransformer = transformSailboat(env.addSource(kafkaConsumer))
+  val sailboatTransformer = transformSailboatCountWindow(env.addSource(kafkaConsumer))
 
   sailboatTransformer.addSink(kafkaProducer)
   sailboatTransformer.print()
@@ -54,12 +57,51 @@ object sailboatTransformer extends App {
     }
   }
 
+  class SailboatToBoatTransformRichMap extends RichMapFunction[Sailboat, Option[Boat]] {
+    private var lastBoat: ValueState[Sailboat] = _
 
-  def transformSailboat(stream: DataStream[String]) : DataStream[String] = {
+    override def open(parameters: Configuration): Unit = {
+        //super.open(parameters)
+      val lastBoatDescriptor = new ValueStateDescriptor[Sailboat]("lastBoat", classOf[Sailboat])
+      lastBoat = getRuntimeContext.getState[Sailboat](lastBoatDescriptor)
+    }
+
+    override def map(currBoat: Sailboat): Option[Boat] = {
+      val r0: Sailboat = lastBoat.value()
+      this.lastBoat.update(currBoat)
+      if (r0 == null)
+        return None
+      val r1: Sailboat = currBoat // Most recent
+      val vx: Float = (r1.Position("x") - r0.Position("x")) / (r1.Timestamp - r0.Timestamp)
+      val vy: Float = (r1.Position("y") - r0.Position("y")) / (r1.Timestamp - r0.Timestamp)
+      val velocity = Map("x" -> vx, "y" -> vy)
+      val orientation = Math.atan2(vy, vx).toFloat
+
+
+      if (!vx.isNaN && !vy.isNaN) {
+        return Option(Boat(r0.Name, "Sailboat", r0.Position, velocity, orientation, r0.Timestamp))
+      }
+
+      None
+    }
+  }
+
+
+  def transformSailboatCountWindow(stream: DataStream[String]) : DataStream[String] = {
     stream.map(Sailboat)
       .keyBy(x => x.Name)
       .countWindow(2, 1)
       .process(new MyProcessWindowFunction)
       .map(x => Boat.toJSONString(x))
   }
+
+  def transformSailboatRichMap(stream: DataStream[String]) : DataStream[String] = {
+    stream.map(Sailboat)
+      .keyBy(x => x.Name)
+      .map(new SailboatToBoatTransformRichMap)
+      .filter(x => x.isDefined)
+      .map(x => x.get)
+      .map(x => Boat.toJSONString(x))
+  }
+
 }

@@ -27,3 +27,5 @@
 
 # External packages
 **/github.com
+
+.vscode/
