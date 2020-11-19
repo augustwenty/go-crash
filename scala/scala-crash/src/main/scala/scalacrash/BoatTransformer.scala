@@ -5,7 +5,6 @@ import org.apache.flink.streaming.api.scala._
 import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import scalacrash.sailboatTransformer.SailboatToBoatTransformRichMap
 
 object BoatTransformer extends  App {
 //  val env = StreamExecutionEnvironment.getExecutionEnvironment
@@ -24,12 +23,9 @@ object BoatTransformer extends  App {
 
   def transformBoatRichMap(stream: DataStream[Boat]) : DataStream[String] = {
     stream.map(new BoatCollisionDetectionRichMap)
-      .filter(x => {
-        x.isDefined
-      })
+      .filter(_.isDefined)
       .map(x => Boat.toJSONString(x.get))
   }
-
 
   class BoatCollisionDetectionRichMap extends RichMapFunction[Boat, Option[Boat]] {
     private var boats: ValueState[Map[String, Boat]] = _
@@ -45,19 +41,16 @@ object BoatTransformer extends  App {
       val updatedBoats = this.boats.value() + (currBoat.Name->currBoat)
       this.boats.update(updatedBoats)
 
-      val firstBoatYouHit = this.boats.value().find(boat => {
-        if (boat._1 != currBoat.Name) {
-          if (Boat.areColliding(currBoat, boat._2, 10)) {
-            return Option(boat._2)
-          }
-        }
-        return None
-      } )
+      val firstBoatYouHit = this.boats.value().find(findCollidingBoat(currBoat, _))
 
-      val didCollide = firstBoatYouHit.isDefined
-      Option(currBoat.copy(Colliding=didCollide))
+      Option(currBoat.copy(Colliding=firstBoatYouHit.isDefined))
     }
 
+    def findCollidingBoat(currBoat: Boat, boatData: (String, Boat)): Boolean = {
+      if (boatData._1 == currBoat.Name) return false
+
+      Boat.areColliding(currBoat, boatData._2, 10)
+    }
   }
 }
 
