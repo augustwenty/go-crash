@@ -40,8 +40,8 @@ func SendBoatData(numMessages int, dt float64) {
 	speedboatNames := []string{"SS Hare", "The Flying Wasp", "Slice of Life", "Dont Crash Me"}
 	sailboatNames := []string{"SS Turtle", "SS Windbag", "Slow n Steady", "Tow Me"}
 
-	speedboatIC := GenerateRandomBoatInitialConditions(speedboatNames)
-	sailboatIC := GenerateRandomBoatInitialConditions(sailboatNames)
+	speedboatIC := GenerateRandomBoatInitialConditions(speedboatNames, 60)
+	sailboatIC := GenerateRandomBoatInitialConditions(sailboatNames, 15)
 
 	t := float64(0)
 
@@ -91,11 +91,11 @@ func GenerateRandomVector2D(maxMagnitude float64) messages.Vector2D {
 }
 
 // GenerateRandomBoatInitialConditions ...
-func GenerateRandomBoatInitialConditions(boatNames []string) []messages.Boat {
+func GenerateRandomBoatInitialConditions(boatNames []string, maxVelocity float64) []messages.Boat {
 	boatsIC := make([]messages.Boat, len(boatNames))
 	for i, name := range boatNames {
 		r0 := GenerateRandomVector2D(300)
-		v0 := GenerateRandomVector2D(10)
+		v0 := GenerateRandomVector2D(maxVelocity)
 		boatsIC[i] = messages.Boat{Name: name, Position: r0, Velocity: v0}
 	}
 
