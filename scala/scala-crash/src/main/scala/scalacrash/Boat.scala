@@ -9,7 +9,8 @@ case class Boat (
     Position: Map[String, Float],
     Velocity: Map[String, Float],
     Orientation: Float,
-    Timestamp: Float
+    Timestamp: Float,
+    Colliding: Boolean = false
 )
 
 
@@ -25,6 +26,10 @@ object Boat {
         val orientation: Float = 1.0F //Float = Math.atan2(sailboat.Velocity("y"), sailboat.Velocity("x")).toFloat
         Boat(sailboat.Name, "sailboat", sailboat.Position, vel,
             orientation, sailboat.Timestamp)
+    }
+
+    def areColliding(boat1: Boat, boat2: Boat, threshold: Double): Boolean = {
+        math.sqrt(math.pow(boat1.Position("x")-boat2.Position("x"),2) + math.pow(boat1.Position("y")-boat2.Position("y"),2)) < threshold
     }
 
     def toJSONString(boat: Boat): String = {

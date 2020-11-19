@@ -14,28 +14,20 @@ import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironm
 import org.apache.flink.streaming.connectors.kafka.{FlinkKafkaConsumer, FlinkKafkaProducer}
 import org.apache.flink.util.Collector
 
-object sailboatTransformer extends App {
-  val env = StreamExecutionEnvironment.getExecutionEnvironment
+object sailboatTransformer {
 
-  val properties = new Properties()
-  properties.setProperty("bootstrap.servers", "localhost:9092")
-  properties.setProperty("group.id", "g3")
+  def setupSailboatTransform(env: StreamExecutionEnvironment): DataStream[Boat] = {
+    val properties = new Properties()
+    properties.setProperty("bootstrap.servers", "localhost:9092")
+    properties.setProperty("group.id", "g3")
 
-  val kafkaConsumer = new FlinkKafkaConsumer[String](
-    "raw_sailboat_data",
-    new SimpleStringSchema,
-    properties)
+    val kafkaConsumer = new FlinkKafkaConsumer[String](
+      "raw_sailboat_data",
+      new SimpleStringSchema,
+      properties)
 
-  val kafkaProducer = new FlinkKafkaProducer[String](
-    "localhost:9092",
-    "boat_data",
-    new SimpleStringSchema)
-
-  val sailboatTransformer = transformSailboatCountWindow(env.addSource(kafkaConsumer))
-
-  sailboatTransformer.addSink(kafkaProducer)
-  sailboatTransformer.print()
-  env.execute()
+    transformSailboatCountWindow(env.addSource(kafkaConsumer))
+  }
 
   class MyProcessWindowFunction extends ProcessWindowFunction[Sailboat, Boat, String, GlobalWindow ] {
 
@@ -87,21 +79,19 @@ object sailboatTransformer extends App {
   }
 
 
-  def transformSailboatCountWindow(stream: DataStream[String]) : DataStream[String] = {
+  def transformSailboatCountWindow(stream: DataStream[String]) : DataStream[Boat] = {
     stream.map(Sailboat)
       .keyBy(x => x.Name)
       .countWindow(2, 1)
       .process(new MyProcessWindowFunction)
-      .map(x => Boat.toJSONString(x))
   }
 
-  def transformSailboatRichMap(stream: DataStream[String]) : DataStream[String] = {
+  def transformSailboatRichMap(stream: DataStream[String]) : DataStream[Boat] = {
     stream.map(Sailboat)
       .keyBy(x => x.Name)
       .map(new SailboatToBoatTransformRichMap)
       .filter(x => x.isDefined)
       .map(x => x.get)
-      .map(x => Boat.toJSONString(x))
   }
 
 }

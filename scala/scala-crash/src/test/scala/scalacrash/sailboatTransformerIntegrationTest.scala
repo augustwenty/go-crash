@@ -51,7 +51,7 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
     assert(CollectSailboatTransformSink.values.size == 2)
 
     val expectedSailboat = boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"Sailboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}")
-    val actualSailboat = boatToJson(CollectSailboatTransformSink.values.head)
+    val actualSailboat = CollectSailboatTransformSink.values.head
 
     assert(actualSailboat.Name == expectedSailboat.Name)
     assert(actualSailboat.Type == expectedSailboat.Type)
@@ -76,15 +76,15 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
     assert(CollectSailboatTransformSink.values.size == 2)
 
     val expectedSailboat = boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"Sailboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}")
-    val actualSailboat = boatToJson(CollectSailboatTransformSink.values.head)
+    val actualSailboat = CollectSailboatTransformSink.values.head
 
     assert(actualSailboat.Name == expectedSailboat.Name)
     assert(actualSailboat.Type == expectedSailboat.Type)
   }
 }
 
-class CollectSailboatTransformSink extends SinkFunction[String] {
-  override def invoke(value: String): Unit = {
+class CollectSailboatTransformSink extends SinkFunction[Boat] {
+  override def invoke(value: Boat): Unit = {
     synchronized {
       CollectSailboatTransformSink.values += value
     }
@@ -92,5 +92,5 @@ class CollectSailboatTransformSink extends SinkFunction[String] {
 }
 
 object CollectSailboatTransformSink {
-  val values = ArrayBuffer[String]()
+  val values = ArrayBuffer[Boat]()
 }
