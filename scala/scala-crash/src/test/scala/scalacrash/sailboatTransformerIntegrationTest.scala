@@ -10,8 +10,9 @@ import org.scalatest.funsuite.AnyFunSuite
 import net.liftweb.json._
 
 import scala.collection.mutable.ArrayBuffer 
+import scalacrash.util.JsonUtil
 
-class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter{
+class SailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter{
   val flinkCluster = new MiniClusterWithClientResource(new MiniClusterResourceConfiguration.Builder()
     .setNumberSlotsPerTaskManager(1)
     .setNumberTaskManagers(1)
@@ -23,12 +24,6 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
 
   after {
     flinkCluster.after()
-  }
-
-  def boatToJson(boatJson: String) : Boat = {
-    implicit val formats = DefaultFormats
-    val jsonObj = parse(boatJson)
-    jsonObj.extract[Boat]
   }
 
   test("executes flow") {
@@ -44,13 +39,13 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
     implicit val typeInfo = TypeInformation.of(classOf[String]) 
     
     val stream = env.fromElements(sailboatJSON1, sailboatJSON2, sailboatJSON3, sailboatJSON4)
-    sailboatTransformer.transformSailboat(stream).addSink(new CollectSailboatTransformSink())
+    SailboatTransformer.transformSailboat(stream).addSink(new CollectSailboatTransformSink())
     env.execute()
 
     assert(CollectSailboatTransformSink.values.size == 2)
 
-    val expectedSailboat = boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"Sailboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}")
-    val actualSailboat = boatToJson(CollectSailboatTransformSink.values.head)
+    val expectedSailboat = JsonUtil.boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"Sailboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}")
+    val actualSailboat = JsonUtil.boatToJson(CollectSailboatTransformSink.values.head)
 
     assert(actualSailboat.Name == expectedSailboat.Name)
     assert(actualSailboat.Type == expectedSailboat.Type)

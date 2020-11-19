@@ -10,7 +10,7 @@ import org.scalatest.funsuite.AnyFunSuite
 
 import scala.collection.mutable.ArrayBuffer 
 
-class speedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter{
+class SpeedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter{
   val flinkCluster = new MiniClusterWithClientResource(new MiniClusterResourceConfiguration.Builder()
     .setNumberSlotsPerTaskManager(1)
     .setNumberTaskManagers(1)
@@ -35,11 +35,9 @@ class speedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfte
     implicit val typeInfo = TypeInformation.of(classOf[String]) 
     
     val stream = env.fromElements(speedboatJSON)
-    speedboatTransformer.transformSpeedboat(stream).addSink(new CollectSpeedboatTransformSink())
+    SpeedboatTransformer.transformSpeedboat(stream).addSink(new CollectSpeedboatTransformSink())
 
     env.execute()
-
-    print(CollectSpeedboatTransformSink.values)
 
     val expectedSpeedboat = "{\"Name\":\"Tow Me\",\"Type\":\"speedboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}"
     assert(CollectSpeedboatTransformSink.values.head.equals(expectedSpeedboat))

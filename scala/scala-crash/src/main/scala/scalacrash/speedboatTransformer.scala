@@ -5,7 +5,7 @@ import org.apache.flink.streaming.connectors.kafka._
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import java.util.Properties
 
-object speedboatTransformer extends App {
+object SpeedboatTransformer extends App {
   val env = StreamExecutionEnvironment.getExecutionEnvironment
 
   val properties = new Properties()

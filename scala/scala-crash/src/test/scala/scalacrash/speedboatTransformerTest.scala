@@ -10,7 +10,7 @@ import org.scalatest.funsuite.AnyFunSuite
 
 import scala.collection.mutable.ArrayBuffer
 
-class speedboatTransformerTest extends AnyFunSuite with BeforeAndAfter {
+class SpeedboatTransformerTest extends AnyFunSuite with BeforeAndAfter {
   val flinkCluster = new MiniClusterWithClientResource(new MiniClusterResourceConfiguration.Builder()
     .setNumberSlotsPerTaskManager(1)
     .setNumberTaskManagers(1)
@@ -35,8 +35,6 @@ class speedboatTransformerTest extends AnyFunSuite with BeforeAndAfter {
       .addSink(new CollectSink())
 
     env.execute()
-
-    print(CollectSink.values)
 
     val expectedSpeedboat = Speedboat("Tow Me", Map("x" -> 0.7F, "y" -> 0.5F), Map("x" -> 1.0F, "y" -> 2.0F), 0.4F)
     assert(CollectSink.values.head.equals(expectedSpeedboat))

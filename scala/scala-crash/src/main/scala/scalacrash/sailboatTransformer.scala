@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironm
 import org.apache.flink.streaming.connectors.kafka.{FlinkKafkaConsumer, FlinkKafkaProducer}
 import org.apache.flink.util.Collector
 
-object sailboatTransformer extends App {
+object SailboatTransformer extends App {
   val env = StreamExecutionEnvironment.getExecutionEnvironment
 
   val properties = new Properties()
@@ -39,7 +39,6 @@ object sailboatTransformer extends App {
     def process(key: String, context:Context, input: Iterable[Sailboat], out: Collector[Boat]): Unit = {
       if (input.size != 2) return
 
-
       val r0: Sailboat = input.head
       val r1: Sailboat = input.last // Most recent
       val vx: Float = (r1.Position("x") - r0.Position("x")) / (r1.Timestamp - r0.Timestamp)
@@ -50,10 +49,8 @@ object sailboatTransformer extends App {
       if (!vx.isNaN && !vy.isNaN) {
         out.collect(Boat(r0.Name, "Sailboat", r0.Position, velocity, orientation, r0.Timestamp))
       }
-
     }
   }
-
 
   def transformSailboat(stream: DataStream[String]) : DataStream[String] = {
     stream.map(Sailboat)
