@@ -22,7 +22,8 @@ object BoatTransformer extends  App {
   env.execute()
 
   def transformBoatRichMap(stream: DataStream[Boat]) : DataStream[String] = {
-    stream.map(new BoatCollisionDetectionRichMap)
+    stream.keyBy(x=>"Boats")
+      .map(new BoatCollisionDetectionRichMap)
       .filter(_.isDefined)
       .map(x => Boat.toJSONString(x.get))
   }
@@ -31,25 +32,29 @@ object BoatTransformer extends  App {
     private var boats: ValueState[Map[String, Boat]] = _
 
     override def open(parameters: Configuration): Unit = {
-//      super.open(parameters)
       val lastBoatDescriptor = new ValueStateDescriptor[Map[String, Boat]]("boats", classOf[Map[String, Boat]])
       boats = getRuntimeContext.getState[Map[String, Boat]](lastBoatDescriptor)
-      println("YO FOOL!")
     }
 
     override def map(currBoat: Boat): Option[Boat] = {
-      val updatedBoats = this.boats.value() + (currBoat.Name->currBoat)
+      println(currBoat.Name)
+      val updatedBoats = if (this.boats.value() == null) {
+        Map(currBoat.Name->currBoat)
+      } else {
+        this.boats.value() + (currBoat.Name->currBoat)
+      }
+
       this.boats.update(updatedBoats)
 
-      val firstBoatYouHit = this.boats.value().find(findCollidingBoat(currBoat, _))
-
+      val firstBoatYouHit = updatedBoats.find(findCollidingBoat(currBoat, _))
+      println(firstBoatYouHit)
       Option(currBoat.copy(Colliding=firstBoatYouHit.isDefined))
     }
 
     def findCollidingBoat(currBoat: Boat, boatData: (String, Boat)): Boolean = {
       if (boatData._1 == currBoat.Name) return false
 
-      Boat.areColliding(currBoat, boatData._2, 10)
+      Boat.areColliding(currBoat, boatData._2, 10.0)
     }
   }
 }
