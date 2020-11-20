@@ -1,21 +1,33 @@
 package scalacrash
 
+import java.util
+
 import org.apache.flink.api.common.functions.RichMapFunction
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
 import org.apache.flink.configuration.Configuration
+import org.apache.flink.streaming.api.checkpoint.ListCheckpointed
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
+import java.util.ArrayList
+
+import collection.mutable
+import scala.collection.JavaConverters._
 
 object BoatTransformer extends  App {
-//  val env = StreamExecutionEnvironment.getExecutionEnvironment
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
 
-  val env = StreamExecutionEnvironment.createLocalEnvironment()
+  env.setParallelism(1)
 
   var speedboatTransformerStream = speedboatTransformer.setupSpeedboatTransformer(env)
   var sailboatTransformerStream = sailboatTransformer.setupSailboatTransform(env)
 
   var boatPartyStream = speedboatTransformerStream.union(sailboatTransformerStream)
-  var boatPartyStreamXfm = transformBoatRichMap(boatPartyStream)
+
+  // use keyed state
+  //var boatPartyStreamXfm = transformBoatRichMap(boatPartyStream)
+
+  // use operator state
+  var boatPartyStreamXfm = transformBoatRichMapOpState(boatPartyStream)
 
   boatPartyStreamXfm.print()
 
@@ -24,6 +36,13 @@ object BoatTransformer extends  App {
   def transformBoatRichMap(stream: DataStream[Boat]) : DataStream[String] = {
     stream.keyBy(x=>"Boats")
       .map(new BoatCollisionDetectionRichMap)
+      .filter(_.isDefined)
+      .map(x => Boat.toJSONString(x.get))
+  }
+
+  def transformBoatRichMapOpState(stream: DataStream[Boat]) : DataStream[String] = {
+    stream
+      .map(new BoatCollisionDetectionOpState)
       .filter(_.isDefined)
       .map(x => Boat.toJSONString(x.get))
   }
@@ -57,6 +76,37 @@ object BoatTransformer extends  App {
       Boat.areColliding(currBoat, boatData._2, 10.0)
     }
   }
+
+  class BoatCollisionDetectionOpState
+    extends RichMapFunction[Boat, Option[Boat]]
+    with ListCheckpointed[java.util.HashMap[String, Boat]] {
+
+    private var boats: java.util.HashMap[String,Boat] = new java.util.HashMap[String,Boat]()
+
+    override def map(currBoat: Boat): Option[Boat] = {
+      this.boats.put(currBoat.Name, currBoat)
+
+      val firstBoatYouHit = this.boats.asScala.find(findCollidingBoat(currBoat, _))
+
+      Option(currBoat.copy(Colliding=firstBoatYouHit.isDefined))
+    }
+
+    def findCollidingBoat(currBoat: Boat, boatData: (String, Boat)): Boolean = {
+      if (boatData._1 == currBoat.Name) return false
+
+      Boat.areColliding(currBoat, boatData._2, 10.0)
+    }
+
+    override def restoreState(state: java.util.List[java.util.HashMap[String,Boat]]): Unit = {
+      this.boats = new java.util.HashMap[String,Boat]()
+      if (state.size() > 0) this.boats = state.get(0)
+    }
+
+    override def snapshotState(chkpntId: Long, ts: Long): java.util.List[java.util.HashMap[String,Boat]] = {
+      util.Collections.singletonList(this.boats)
+    }
+  }
+
 }
 
 
