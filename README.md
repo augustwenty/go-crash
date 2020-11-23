@@ -47,9 +47,17 @@ cd scala/scala-crash
 sbt run
 ```
 
-## Start kafka2websocket
+## Build and Start kafka2websocket
+
 ```
-cd dashboard/kafka2websocket
+brew install openssl
+
+cd dashboard/kafka2websocket/k2ws
+
+CFLAGS="-I/usr/local/opt/openssl/include"
+LDFLAGS="-L/usr/local/opt/openssl/lib"
+go build -tags static
+
 ./k2ws
 ```
 
