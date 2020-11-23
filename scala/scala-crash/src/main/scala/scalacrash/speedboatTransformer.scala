@@ -5,32 +5,27 @@ import org.apache.flink.streaming.connectors.kafka._
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import java.util.Properties
 
-object speedboatTransformer extends App {
-  val env = StreamExecutionEnvironment.getExecutionEnvironment
+import org.apache.flink.api.common.functions.RichMapFunction
+import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
+import org.apache.flink.configuration.Configuration
 
-  val properties = new Properties()
-  properties.setProperty("bootstrap.servers", "localhost:9092")
-  properties.setProperty("group.id", "g3")
+object speedboatTransformer {
 
-  val kafkaConsumer = new FlinkKafkaConsumer[String](
-                "raw_speedboat_data",
-                new SimpleStringSchema,
-                properties) 
+  def setupSpeedboatTransformer(env: StreamExecutionEnvironment): DataStream[Boat] = {
+    val properties = new Properties()
+    properties.setProperty("bootstrap.servers", "localhost:9092")
+    properties.setProperty("group.id", "g3")
 
-  val kafkaProducer = new FlinkKafkaProducer[String](
-                "localhost:9092",
-                "boat_data",
-                new SimpleStringSchema)
+    val kafkaConsumer = new FlinkKafkaConsumer[String](
+      "raw_speedboat_data",
+      new SimpleStringSchema,
+      properties)
 
-  val speedboatTransform = transformSpeedboat(env.addSource(kafkaConsumer))
+    transformSpeedboat(env.addSource(kafkaConsumer))
+  }
 
-  speedboatTransform.addSink(kafkaProducer)
-  speedboatTransform.print()
-  env.execute()
-
-  def transformSpeedboat(stream: DataStream[String]) : DataStream[String] = {
+  def transformSpeedboat(stream: DataStream[String]) : DataStream[Boat] = {
             stream.map(Speedboat)
                   .map(x => Boat.transform(x))
-                  .map(x => Boat.toJSONString(x))
-        }
+  }
 }

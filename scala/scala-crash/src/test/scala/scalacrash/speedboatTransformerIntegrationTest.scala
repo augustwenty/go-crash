@@ -46,8 +46,8 @@ class speedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfte
   }
 }
 
-class CollectSpeedboatTransformSink extends SinkFunction[String] {
-  override def invoke(value: String): Unit = {
+class CollectSpeedboatTransformSink extends SinkFunction[Boat] {
+  override def invoke(value: Boat): Unit = {
     synchronized {
       CollectSpeedboatTransformSink.values += value
     }
@@ -55,5 +55,5 @@ class CollectSpeedboatTransformSink extends SinkFunction[String] {
 }
 
 object CollectSpeedboatTransformSink {
-  val values = ArrayBuffer[String]()
+  val values = ArrayBuffer[Boat]()
 }

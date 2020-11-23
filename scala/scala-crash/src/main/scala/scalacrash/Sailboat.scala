@@ -16,3 +16,4 @@ object Sailboat extends MapFunction[String, Sailboat] {
     jsonObj.extract[Sailboat]
   }
 }
+
