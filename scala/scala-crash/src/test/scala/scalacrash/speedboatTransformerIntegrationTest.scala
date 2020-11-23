@@ -9,6 +9,8 @@ import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.test.util.MiniClusterWithClientResource
 import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
+import scalacrash.caseClasses.Boat
+import scalacrash.transformers.speedboatTransformer
 
 import scala.collection.mutable.ArrayBuffer 
 
