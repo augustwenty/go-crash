@@ -13,7 +13,7 @@ import scalacrash.transformers.SailboatTransformer
 
 import scala.collection.mutable.ArrayBuffer 
 
-class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter{
+class SailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter{
   val flinkCluster = new MiniClusterWithClientResource(new MiniClusterResourceConfiguration.Builder()
     .setNumberSlotsPerTaskManager(1)
     .setNumberTaskManagers(1)

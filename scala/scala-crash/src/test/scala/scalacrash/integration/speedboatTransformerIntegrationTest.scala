@@ -13,7 +13,7 @@ import scalacrash.transformers.SpeedboatTransformer
 
 import scala.collection.mutable.ArrayBuffer 
 
-class speedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter{
+class SpeedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter {
   val flinkCluster = new MiniClusterWithClientResource(new MiniClusterResourceConfiguration.Builder()
     .setNumberSlotsPerTaskManager(1)
     .setNumberTaskManagers(1)
@@ -33,8 +33,7 @@ class speedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfte
     jsonObj.extract[Boat]
   }
 
-
-  test("executes flow") {
+  test("transforms speedboat") {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
 
     CollectSpeedboatTransformSink.values.clear()
