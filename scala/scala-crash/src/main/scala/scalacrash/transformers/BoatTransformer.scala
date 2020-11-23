@@ -12,8 +12,8 @@ object BoatTransformer extends App {
 
   env.setParallelism(1)
 
-  var speedboatTransformerStream = speedboatTransformer.setupSpeedboatTransformer(env)
-  var sailboatTransformerStream = sailboatTransformer.setupSailboatTransform(env)
+  var speedboatTransformerStream = SpeedboatTransformer.setupSpeedboatTransformer(env)
+  var sailboatTransformerStream = SailboatTransformer.setupSailboatTransform(env)
 
   var boatPartyStream = speedboatTransformerStream.union(sailboatTransformerStream)
 

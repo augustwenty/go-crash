@@ -1,5 +1,6 @@
-package scalacrash
+package scalacrash.integration
 
+import net.liftweb.json._
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration
 import org.apache.flink.streaming.api.functions.sink.SinkFunction
@@ -7,13 +8,12 @@ import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.test.util.MiniClusterWithClientResource
 import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
-import net.liftweb.json._
 import scalacrash.caseClasses.Boat
-import scalacrash.transformers.sailboatTransformer
+import scalacrash.transformers.SailboatTransformer
 
 import scala.collection.mutable.ArrayBuffer 
 
-class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter{
+class SailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter{
   val flinkCluster = new MiniClusterWithClientResource(new MiniClusterResourceConfiguration.Builder()
     .setNumberSlotsPerTaskManager(1)
     .setNumberTaskManagers(1)
@@ -47,7 +47,7 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
     implicit val typeInfo = TypeInformation.of(classOf[String]) 
     
     val stream = env.fromElements(sailboatJSON1, sailboatJSON2, sailboatJSON3, sailboatJSON4)
-    sailboatTransformer.transformSailboatCountWindow(stream).addSink(new CollectSailboatTransformSink())
+    SailboatTransformer.transformSailboatCountWindow(stream).addSink(new CollectSailboatTransformSink())
     env.execute()
 
     assert(CollectSailboatTransformSink.values.size == 2)
@@ -72,7 +72,7 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
     implicit val typeInfo = TypeInformation.of(classOf[String])
 
     val stream = env.fromElements(sailboatJSON1, sailboatJSON2, sailboatJSON3, sailboatJSON4)
-    sailboatTransformer.transformSailboatRichMap(stream).addSink(new CollectSailboatTransformSink())
+    SailboatTransformer.transformSailboatRichMap(stream).addSink(new CollectSailboatTransformSink())
     env.execute()
 
     assert(CollectSailboatTransformSink.values.size == 2)

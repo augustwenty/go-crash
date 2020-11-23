@@ -1,10 +1,9 @@
-package scalacrash
+package scalacrash.mapFunctions
 
 import org.scalatest.funsuite.AnyFunSuite
 import scalacrash.caseClasses.Speedboat
-import scalacrash.mapFunctions.ToSpeedboat
 
-class SpeedboatUnitTest extends AnyFunSuite {
+class ToSpeedboatTest extends AnyFunSuite {
 
   test("parse speedboat json correctly") {
     val speedboatJSON = "{\"Name\":\"Tow Me\",\"Position\":{\"x\":0.7,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Timestamp\":0.4}"

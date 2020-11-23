@@ -9,7 +9,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
 import scalacrash.caseClasses.Boat
 import scalacrash.mapFunctions.{CalculateSpeedboatOrientation, ToSpeedboat}
 
-object speedboatTransformer {
+object SpeedboatTransformer {
 
   def setupSpeedboatTransformer(env: StreamExecutionEnvironment): DataStream[Boat] = {
     val properties = new Properties()
