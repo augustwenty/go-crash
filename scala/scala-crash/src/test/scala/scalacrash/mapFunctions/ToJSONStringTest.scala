@@ -1,12 +1,11 @@
-package scalacrash
+package scalacrash.mapFunctions
 
-import net.liftweb.json.JsonDSL._
 import net.liftweb.json.JsonAST.compactRender
+import net.liftweb.json.JsonDSL._
 import org.scalatest.funsuite.AnyFunSuite
 import scalacrash.caseClasses.Boat
-import scalacrash.mapFunctions.ToJSONString
 
-class BoatUnitTest extends AnyFunSuite {
+class ToJSONStringTest extends AnyFunSuite {
 
   test("output boat json correctly") {
     val boatObj = Boat("SS Hare", "Speedboat", Map("x"->1.0F, "y"->2.0F), Map("x"->1.1F, "y"->2.1F), 1.2F, .111F)

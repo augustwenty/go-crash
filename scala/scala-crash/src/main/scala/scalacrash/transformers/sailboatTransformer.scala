@@ -12,7 +12,7 @@ import org.apache.flink.util.Collector
 import scalacrash.caseClasses.{Boat, Sailboat}
 import scalacrash.mapFunctions.{CalculateSailboatOrientationWithKeyedState, ToSailboat}
 
-object sailboatTransformer {
+object SailboatTransformer {
 
   def setupSailboatTransform(env: StreamExecutionEnvironment): DataStream[Boat] = {
     val properties = new Properties()
