@@ -20,7 +20,8 @@ class BoatUnitTest extends AnyFunSuite {
         ("x" -> boatObj.Velocity("x")) ~
         ("y" -> boatObj.Velocity("y")) ) ~
       ("Orientation" -> boatObj.Orientation) ~
-      ("Timestamp" -> boatObj.Timestamp)
+      ("Timestamp" -> boatObj.Timestamp) ~
+      ("Colliding" -> false)
 
     assert(boatJSON == compactRender(expectedJSON))
   }

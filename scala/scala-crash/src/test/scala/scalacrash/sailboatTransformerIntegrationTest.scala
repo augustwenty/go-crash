@@ -50,7 +50,7 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
 
     assert(CollectSailboatTransformSink.values.size == 2)
 
-    val expectedSailboat = boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"Sailboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}")
+    val expectedSailboat = boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"Sailboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645,\"Colliding\":false}")
     val actualSailboat = CollectSailboatTransformSink.values.head
 
     assert(actualSailboat.Name == expectedSailboat.Name)
@@ -75,7 +75,7 @@ class sailboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfter
 
     assert(CollectSailboatTransformSink.values.size == 2)
 
-    val expectedSailboat = boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"Sailboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}")
+    val expectedSailboat = boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"Sailboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645, \"Colliding\":false}")
     val actualSailboat = CollectSailboatTransformSink.values.head
 
     assert(actualSailboat.Name == expectedSailboat.Name)

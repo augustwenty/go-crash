@@ -1,6 +1,8 @@
 package scalacrash
 
+import net.liftweb.json.{DefaultFormats, parse}
 import org.apache.flink.api.common.typeinfo.TypeInformation
+import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration
 import org.apache.flink.streaming.api.functions.sink.SinkFunction
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
@@ -24,6 +26,12 @@ class speedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfte
     flinkCluster.after()
   }
 
+  def boatToJson(boatJson: String) : Boat = {
+    implicit val formats = DefaultFormats
+    val jsonObj = parse(boatJson)
+    jsonObj.extract[Boat]
+  }
+
 
   test("executes flow") {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
@@ -32,8 +40,6 @@ class speedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfte
 
     val speedboatJSON = "{\"Name\":\"Tow Me\",\"Position\":{\"x\":0.7,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Timestamp\":0.4}"
     
-    implicit val typeInfo = TypeInformation.of(classOf[String]) 
-    
     val stream = env.fromElements(speedboatJSON)
     speedboatTransformer.transformSpeedboat(stream).addSink(new CollectSpeedboatTransformSink())
 
@@ -41,7 +47,7 @@ class speedboatTransformerIntegrationTest extends AnyFunSuite with BeforeAndAfte
 
     print(CollectSpeedboatTransformSink.values)
 
-    val expectedSpeedboat = "{\"Name\":\"Tow Me\",\"Type\":\"speedboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645}"
+    val expectedSpeedboat = boatToJson("{\"Name\":\"Tow Me\",\"Type\":\"speedboat\",\"Position\":{\"x\":0.699999988079071,\"y\":0.5},\"Velocity\":{\"x\":1.0,\"y\":2.0},\"Orientation\":1.1071487665176392,\"Timestamp\":0.4000000059604645,\"Colliding\":false}")
     assert(CollectSpeedboatTransformSink.values.head.equals(expectedSpeedboat))
   }
 }
