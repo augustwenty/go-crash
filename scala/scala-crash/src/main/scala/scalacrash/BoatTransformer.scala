@@ -1,20 +1,15 @@
 package scalacrash
 
-import java.util
-
 import org.apache.flink.api.common.functions.RichMapFunction
-import org.apache.flink.streaming.api.scala._
-import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
-import org.apache.flink.configuration.Configuration
-import org.apache.flink.streaming.api.checkpoint.{CheckpointedFunction, ListCheckpointed}
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import java.util.ArrayList
-
-import org.apache.flink.api.common.state.{ListState, ListStateDescriptor}
+import org.apache.flink.api.common.serialization.SimpleStringSchema
+import org.apache.flink.api.common.state.{ListState, ListStateDescriptor, ValueState, ValueStateDescriptor}
 import org.apache.flink.api.common.typeinfo.{TypeHint, TypeInformation}
+import org.apache.flink.configuration.Configuration
 import org.apache.flink.runtime.state.{FunctionInitializationContext, FunctionSnapshotContext}
+import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction
+import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment, _}
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer
 
-import collection.mutable
 import scala.collection.JavaConverters._
 
 object BoatTransformer extends  App {
@@ -34,6 +29,12 @@ object BoatTransformer extends  App {
   var boatPartyStreamXfm = transformBoatRichMapOpStateNew(boatPartyStream)
 
   boatPartyStreamXfm.print()
+
+  val kafkaProducer = new FlinkKafkaProducer[String](
+    "localhost:9092",
+    "boat_data",
+    new SimpleStringSchema)
+  boatPartyStreamXfm.addSink(kafkaProducer)
 
   env.execute()
 

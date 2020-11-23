@@ -62,10 +62,12 @@ function renderBoat(canvasCtx, boat) {
 
     // color boat based on type
     let boatType = boat["Type"]
-    if (boatType == "Sailboat") {
+    if (boat["Colliding"]) {
+        canvasCtx.fillStyle = "#FF0000"
+    } else if (boatType == "Sailboat") {
         canvasCtx.fillStyle = "#00FF00"
     } else if (boatType == "speedboat") {
-        canvasCtx.fillStyle = "#FF0000"
+        canvasCtx.fillStyle = "#0000FF"
     } else {
         canvasCtx.fillStyle = "#9a9a9a"
     }
