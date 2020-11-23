@@ -8,6 +8,8 @@ import org.apache.flink.test.util.MiniClusterWithClientResource
 import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
 import net.liftweb.json._
+import scalacrash.caseClasses.Boat
+import scalacrash.transformers.sailboatTransformer
 
 import scala.collection.mutable.ArrayBuffer 
 
