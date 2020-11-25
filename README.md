@@ -1,6 +1,6 @@
 # go-crash
 
-This is a little toy project we made to learning about Golang, Kafka, Flink, and Scala. The general thought is this:
+This is a little toy project we made to learn about Golang, Kafka, Flink, and Scala. The general thought is this:
 1. There are 2 types of boats. Speedboats will send a name, timestamp, position, and velocity. Sailboats will only send name, timestamp, and position.
 1. The speedboats and sailboats send their data on different Kafka topics.
 1. Use Flink to stream data as it is generated and put it on another topic. This should include the boat name, timestamp, position, velocity, heading, type, and whether they are about to collide with another boat.
