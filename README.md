@@ -1,7 +1,13 @@
 # go-crash
 
-Don't crash the boats.
+This is a little toy project we made to learning about Golang, Kafka, Flink, and Scala. The general thought is this:
+1. There are 2 types of boats. Speedboats will send a name, timestamp, position, and velocity. Sailboats will only send name, timestamp, and position.
+1. The speedboats and sailboats send their data on different Kafka topics.
+1. Use Flink to stream data as it is generated and put it on another topic. This should include the boat name, timestamp, position, velocity, heading, type, and whether they are about to collide with another boat.
+1. Display a UI that color-codes the boats based on type. Also indicate if they are on a collision course.
 
+# Architecture Diagram
+![Architecture Diagram](./architecture-diagram.png)
 
 # Running the Demo
 
@@ -14,6 +20,7 @@ Install Parcel Bundler:
 ```
 npm install -g parcel-bundler
 ```
+Install Scala 2.12.x and sbt
 
 ## Running Kafka:
 Clone the repository:
@@ -26,22 +33,17 @@ In `docker-compose-single-broker.yaml` change the value of `KAFKA_ADVERTISTED_HO
 KAFKA_ADVERTISED_HOST_NAME: localhost
 ```
 
+In `docker-compose-single-broker.yaml` change the value of `KAFKA_CREATE_TOPICS` on line 13 to the following:
+```
+KAFKA_CREATE_TOPICS: raw_speedboat_data:1:1,raw_sailboat_data:1:1,boat_data:1:1
+```
+
 Start Kafka-docker:
 ```
 docker-compose -f docker-compose-single-broker.yml up -d
 ```
 
-## Start Boat Data generator:
-You need to run this first to get the topic set up:
-
-```
-go run cmd/boatDataGenerator/main.go
-```
-
-Once you've run the data generator once, you can use ctrl-c to stop it for now.
-
-## Start the Speedboat and Sailboat processors:
-You need to perform this part twice in two different terminal windows. When you run `sbt run` you'll be prompted to choose one or the other to start. Run them both in separate windows.
+## Start the boat data processor:
 ```
 cd scala/scala-crash
 sbt run
@@ -61,7 +63,7 @@ go build -tags static
 ./k2ws
 ```
 
-After running this command, you should be able to hit the k2ws test page at http://localhost:8080/test. Click "Open" on the top bar to open the websocket connection. If you run the boat data generator again, you should see messages coming in on this window.
+After running this command, you should be able to hit the k2ws test page at http://localhost:8080/test. Click "Open" on the top bar to open the websocket connection. If you run the boat data generator, you should see messages coming in on this window.
 
 ## Start Web GUI
 ```
