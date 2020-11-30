@@ -26,7 +26,7 @@ object CalculateSailboatOrientationWithKeyedState extends RichMapFunction[Sailbo
 
 
     if (!vx.isNaN && !vy.isNaN) {
-      return Option(Boat(r0.Name, "Sailboat", r0.Position, velocity, orientation, r0.Timestamp))
+      return Option(Boat(r0.Name, "Sailboat", r0.Position, velocity, orientation, r1.Timestamp))
     }
 
     None

@@ -5,7 +5,7 @@ import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
 import org.apache.flink.configuration.Configuration
 import scalacrash.caseClasses.Boat
 
-object AreBoatsCollidingWithKeyedState extends RichMapFunction[Boat, Boat] {
+class AreBoatsCollidingWithKeyedState extends RichMapFunction[Boat, Boat] {
   private var boats: ValueState[Map[String, Boat]] = _
 
   override def open(parameters: Configuration): Unit = {
@@ -14,7 +14,6 @@ object AreBoatsCollidingWithKeyedState extends RichMapFunction[Boat, Boat] {
   }
 
   override def map(currBoat: Boat): Boat = {
-    println(currBoat.Name)
     val updatedBoats = if (this.boats.value() == null) {
       Map(currBoat.Name->currBoat)
     } else {
@@ -24,7 +23,10 @@ object AreBoatsCollidingWithKeyedState extends RichMapFunction[Boat, Boat] {
     this.boats.update(updatedBoats)
 
     val firstBoatYouHit = updatedBoats.find(findCollidingBoat(currBoat, _))
-    println(firstBoatYouHit)
+    if (firstBoatYouHit.isDefined) {
+//      println(s"${currBoat.Name}:${currBoat.Timestamp} hit ${firstBoatYouHit.get._2.Name}:${firstBoatYouHit.get._2.Timestamp}")
+    }
+
     currBoat.copy(Colliding=firstBoatYouHit.isDefined)
   }
 
